@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://unpkg.com/react@17.0.2/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@17.0.2/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
+    <title>TodoList</title>
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      [aria-selected='true'] {
+        color: indianred;
+      }
+
+      #root {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        border: 4px solid royalblue;
+        height: 500px;
+        width: 500px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        background-image: url(https://i.ytimg.com/vi/e34Xv5iid9w/maxresdefault.jpg);
+        box-shadow: 0px 0px 2px 4px royalblue;
+        transition: box-shadow 0.5s linear;
+        overflow-y: auto;
+      }
+
+      #root:hover {
+        box-shadow: 0px 0px 8px 8px royalblue;
+      }
+
+      .todo-wrapper {
+        text-align: center;
+      }
+
+      .todo-heading {
+        margin-bottom: 30px;
+        color: indianred;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      .todo-input {
+        margin-bottom: 10px;
+      }
+
+      #add-todo {
+        border-radius: 10px;
+        padding: 5px;
+        background: rgb(231, 231, 193);
+        font-weight: 700;
+      }
+
+      li {
+        list-style-type: none;
+      }
+
+      button {
+        margin-left: 5px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: 0.5s;
+        box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+      }
+
+      button:hover {
+        background: rgb(231, 231, 193);
+      }
+
+      .btn-li:hover {
+        background: #deb887;
+      }
+
+      .btn-delete:hover {
+        background: tomato;
+      }
+
+      .span-items {
+        color: indianred;
+        text-decoration: underline;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.7);
+      }
+
+      .todo-label {
+        color: indianred;
+        font-size: 1.2rem;
+        display: block;
+        margin-top: 30px;
+        font-weight: bold;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-filter:hover {
+        background: #ffa07a;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="text/babel">
+      const root = document.querySelector('#root');
+
+      const Filter = {
+        ALL: 'all',
+        ACTIVE: 'active',
+        COMPLETED: 'completed',
+      };
+
+      class TodoApp extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { todos: [], filter: Filter.ALL };
+          this.handleTodoAdd = this.handleTodoAdd.bind(this);
+          this.handleTodoComplete = this.handleTodoComplete.bind(this);
+          this.handleTodoDelete = this.handleTodoDelete.bind(this);
+          this.handleFilterChange = this.handleFilterChange.bind(this);
+          this.handleClearCompleted = this.handleClearCompleted.bind(this);
+        }
+
+        handleTodoAdd(newTodo) {
+          this.setState(state => ({ todos: state.todos.concat(newTodo) })); //
+        }
+
+        handleTodoComplete(todo) {
+          this.setState(state => ({
+            todos: state.todos.map(t =>
+              t.id === todo.id ? { ...t, done: !todo.done } : t,
+            ),
+          }));
+        }
+
+        handleTodoDelete(todo) {
+          this.setState(state => ({
+            todos: state.todos.filter(t => t.id !== todo.id),
+          }));
+        }
+
+        handleFilterChange(newFilter) {
+          this.setState({ filter: newFilter });
+        }
+
+        handleClearCompleted() {
+          this.setState(state => ({ todos: state.todos.filter(todo => !todo.done) }));
+        }
+
+        getFilteredTodos() {
+          switch (this.state.filter) {
+            case Filter.ALL:
+              return this.state.todos;
+            case Filter.ACTIVE:
+              return this.state.todos.filter(todo => !todo.done);
+            case Filter.COMPLETED:
+              return this.state.todos.filter(todo => todo.done);
+          }
+        }
+
+        render() {
+          const numItemsLeft = this.state.todos.filter(todo => !todo.done).length;
+          return (
+            <div className="todo-wrapper">
+              <h1 className="todo-heading">Todo List</h1>
+              <TodoList
+                todos={this.getFilteredTodos()}
+                onTodoComplete={this.handleTodoComplete}
+                onTodoDelete={this.handleTodoDelete}
+              />
+              <TodoAddForm todos={this.state.todos} onTodoAdd={this.handleTodoAdd} />
+              <br />
+
+              <div>
+                <span className="span-items">
+                  {numItemsLeft} {numItemsLeft === 1 ? 'item' : 'items'} left&nbsp;&nbsp;
+                </span>
+                <button
+                  className="Button-clear-complited"
+                  disabled={!this.state.todos.some(todo => todo.done)}
+                  onClick={this.handleClearCompleted}
+                >
+                  Clear Completed
+                </button>
+              </div>
+
+              <br />
+              <TodoFilter
+                filter={this.state.filter}
+                onFilterChange={this.handleFilterChange}
+              />
+            </div>
+          );
+        }
+      }
+
+      class TodoList extends React.Component {
+        render() {
+          return (
+            <ul>
+              {this.props.todos.map(todo => (
+                <li key={todo.id}>
+                  <button
+                    className="btn-li"
+                    style={{ textDecoration: todo.done ? 'line-through' : null }}
+                    onClick={() => this.props.onTodoComplete(todo)}
+                  >
+                    <i>{todo.text}</i>
+                  </button>
+                  <button
+                    className="btn-delete"
+                    onClick={() => this.props.onTodoDelete(todo)}
+                  >
+                    &times;
+                  </button>
+                </li>
+              ))}
+            </ul>
+          );
+        }
+      }
+
+      class TodoAddForm extends React.Component {
+        constructor(props) {
+          super(props);
+          this.state = { text: '' };
+          this.handleChange = this.handleChange.bind(this);
+          this.handleSubmit = this.handleSubmit.bind(this);
+        }
+
+        handleChange(e) {
+          this.setState({ text: e.target.value });
+        }
+
+        handleSubmit(e) {
+          e.preventDefault();
+
+          if (this.state.text.length === 0) {
+            return;
+          }
+
+          const newTodo = {
+            id: Date.now(),
+            text: this.state.text,
+            done: false,
+          };
+
+          this.props.onTodoAdd(newTodo);
+          this.setState({ text: '' });
+        }
+
+        render() {
+          return (
+            <form onSubmit={this.handleSubmit}>
+              <span className="todo-label">What needs to be done?</span>
+              <br />
+              <input
+                className="todo-input"
+                id="add-todo"
+                type="text"
+                value={this.state.text}
+                onChange={this.handleChange}
+              />
+              <br />
+              <button>Add № {this.props.todos.length + 1}</button>
+            </form>
+          );
+        }
+      }
+
+      class TodoFilter extends React.Component {
+        render() {
+          return (
+            <div role="tablist">
+              <button
+                className="btn-filter"
+                role="tab"
+                aria-selected={this.props.filter === Filter.ALL}
+                onClick={() => this.props.onFilterChange(Filter.ALL)}
+              >
+                All
+              </button>
+              <button
+                className="btn-filter"
+                role="tab"
+                aria-selected={this.props.filter === Filter.ACTIVE}
+                onClick={() => this.props.onFilterChange(Filter.ACTIVE)}
+              >
+                Active
+              </button>
+              <button
+                className="btn-filter"
+                role="tab"
+                aria-selected={this.props.filter === Filter.COMPLETED}
+                onClick={() => this.props.onFilterChange(Filter.COMPLETED)}
+              >
+                Completed
+              </button>
+            </div>
+          );
+        }
+      }
+
+      ReactDOM.render(<TodoApp />, root);
+    </script>
+  </body>
+</html>

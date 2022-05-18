@@ -1,0 +1,102 @@
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      [aria-selected='true'] {
+        color: indianred;
+      }
+
+      #root {
+        position: absolute;
+        inset: 0;
+        margin: auto;
+        border: 4px solid royalblue;
+        height: 500px;
+        width: 500px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+        border-radius: 20px;
+        background-image: url(https://i.ytimg.com/vi/e34Xv5iid9w/maxresdefault.jpg);
+        box-shadow: 0px 0px 2px 4px royalblue;
+        transition: box-shadow 0.5s linear;
+        overflow-y: auto;
+      }
+
+      #root:hover {
+        box-shadow: 0px 0px 8px 8px royalblue;
+      }
+
+      .todo-wrapper {
+        text-align: center;
+      }
+
+      .todo-heading {
+        margin-bottom: 30px;
+        color: indianred;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.4);
+      }
+
+      .todo-input {
+        margin-bottom: 10px;
+      }
+
+      #add-todo {
+        border-radius: 10px;
+        padding: 5px;
+        background: rgb(231, 231, 193);
+        font-weight: 700;
+      }
+
+      li {
+        list-style-type: none;
+      }
+
+      button {
+        margin-left: 5px;
+        cursor: pointer;
+        padding: 5px;
+        border-radius: 10px;
+        font-weight: 700;
+        cursor: pointer;
+        margin-bottom: 10px;
+        transition: 0.5s;
+        box-shadow: 4px 4px 5px rgba(0, 0, 0, 0.7);
+      }
+
+      button:hover {
+        background: rgb(231, 231, 193);
+      }
+
+      .btn-li:hover {
+        background: #deb887;
+      }
+
+      .btn-delete:hover {
+        background: tomato;
+      }
+
+      .span-items {
+        color: indianred;
+        text-decoration: underline;
+        font-size: 1.2rem;
+        font-weight: 700;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.7);
+      }
+
+      .todo-label {
+        color: indianred;
+        font-size: 1.2rem;
+        display: block;
+        margin-top: 30px;
+        font-weight: bold;
+        text-shadow: 2px 6px 6px rgba(0, 0, 0, 0.5);
+      }
+
+      .btn-filter:hover {
+        background: #ffa07a;
+      }

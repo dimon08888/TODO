@@ -141,11 +141,13 @@ class TodoAddForm extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-        <span className='todo-label'>What needs to be done?</span>
+        <label className='todo-label' htmlFor='todo-input'>
+          What needs to be done?
+        </label>
         <br />
         <input
+          id='todo-input'
           className='todo-input'
-          id='add-todo'
           type='text'
           value={this.state.text}
           onChange={this.handleChange}

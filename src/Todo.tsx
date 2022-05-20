@@ -1,14 +1,26 @@
 import React from 'react'
 import './todo.css'
 
-const Filter = {
-  ALL: 'all',
-  ACTIVE: 'active',
-  COMPLETED: 'completed',
+enum Filter {
+  ALL = 'all',
+  ACTIVE = 'active',
+  COMPLETED = 'completed',
 }
 
-export default class TodoApp extends React.Component {
-  constructor(props) {
+type Todo = {
+  id: number
+  done: boolean
+  text: string
+}
+
+type TodoAppProps = {}
+type TodoAppState = {
+  todos: Todo[]
+  filter: Filter
+}
+
+export default class TodoApp extends React.Component<TodoAppProps, TodoAppState> {
+  constructor(props: TodoAppProps) {
     super(props)
     this.state = { todos: [], filter: Filter.ALL }
     this.handleTodoAdd = this.handleTodoAdd.bind(this)
@@ -18,23 +30,23 @@ export default class TodoApp extends React.Component {
     this.handleClearCompleted = this.handleClearCompleted.bind(this)
   }
 
-  handleTodoAdd(newTodo) {
+  handleTodoAdd(newTodo: Todo) {
     this.setState(state => ({ todos: state.todos.concat(newTodo) })) //
   }
 
-  handleTodoComplete(todo) {
+  handleTodoComplete(todo: Todo) {
     this.setState(state => ({
       todos: state.todos.map(t => (t.id === todo.id ? { ...t, done: !todo.done } : t)),
     }))
   }
 
-  handleTodoDelete(todo) {
+  handleTodoDelete(todo: Todo) {
     this.setState(state => ({
       todos: state.todos.filter(t => t.id !== todo.id),
     }))
   }
 
-  handleFilterChange(newFilter) {
+  handleFilterChange(newFilter: Filter) {
     this.setState({ filter: newFilter })
   }
 
@@ -71,7 +83,6 @@ export default class TodoApp extends React.Component {
             {numItemsLeft} {numItemsLeft === 1 ? 'item' : 'items'} left&nbsp;&nbsp;
           </span>
           <button
-            className='Button-clear-complited'
             disabled={!this.state.todos.some(todo => todo.done)}
             onClick={this.handleClearCompleted}
           >
@@ -86,42 +97,53 @@ export default class TodoApp extends React.Component {
   }
 }
 
-class TodoList extends React.Component {
-  render() {
-    return (
-      <ul>
-        {this.props.todos.map(todo => (
-          <li key={todo.id}>
-            <button
-              className='btn-li'
-              style={{ textDecoration: todo.done ? 'line-through' : null }}
-              onClick={() => this.props.onTodoComplete(todo)}
-            >
-              <i>{todo.text}</i>
-            </button>
-            <button className='btn-delete' onClick={() => this.props.onTodoDelete(todo)}>
-              &times;
-            </button>
-          </li>
-        ))}
-      </ul>
-    )
-  }
+function TodoList(props: {
+  todos: Todo[]
+  onTodoComplete: (todo: Todo) => void
+  onTodoDelete: (todo: Todo) => void
+}) {
+  return (
+    <ul>
+      {props.todos.map(todo => (
+        <li key={todo.id}>
+          <button
+            className='btn-li'
+            style={{ textDecoration: todo.done ? 'line-through' : undefined }}
+            onClick={() => props.onTodoComplete(todo)}
+          >
+            <i>{todo.text}</i>
+          </button>
+          <button className='btn-delete' onClick={() => props.onTodoDelete(todo)}>
+            &times;
+          </button>
+        </li>
+      ))}
+    </ul>
+  )
 }
 
-class TodoAddForm extends React.Component {
-  constructor(props) {
+type TodoAddFormProps = {
+  todos: Todo[]
+  onTodoAdd: (newTodo: Todo) => void
+}
+
+type TodoAddFormState = {
+  text: string
+}
+
+class TodoAddForm extends React.Component<TodoAddFormProps, TodoAddFormState> {
+  constructor(props: TodoAddFormProps) {
     super(props)
     this.state = { text: '' }
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmit = this.handleSubmit.bind(this)
   }
 
-  handleChange(e) {
+  handleChange(e: React.ChangeEvent<HTMLInputElement>) {
     this.setState({ text: e.target.value })
   }
 
-  handleSubmit(e) {
+  handleSubmit(e: React.FormEvent) {
     e.preventDefault()
 
     if (this.state.text.length === 0) {
@@ -159,35 +181,36 @@ class TodoAddForm extends React.Component {
   }
 }
 
-class TodoFilter extends React.Component {
-  render() {
-    return (
-      <div role='tablist'>
-        <button
-          className='btn-filter'
-          role='tab'
-          aria-selected={this.props.filter === Filter.ALL}
-          onClick={() => this.props.onFilterChange(Filter.ALL)}
-        >
-          All
-        </button>
-        <button
-          className='btn-filter'
-          role='tab'
-          aria-selected={this.props.filter === Filter.ACTIVE}
-          onClick={() => this.props.onFilterChange(Filter.ACTIVE)}
-        >
-          Active
-        </button>
-        <button
-          className='btn-filter'
-          role='tab'
-          aria-selected={this.props.filter === Filter.COMPLETED}
-          onClick={() => this.props.onFilterChange(Filter.COMPLETED)}
-        >
-          Completed
-        </button>
-      </div>
-    )
-  }
+function TodoFilter(props: {
+  filter: Filter
+  onFilterChange: (newFilter: Filter) => void
+}) {
+  return (
+    <div role='tablist'>
+      <button
+        className='btn-filter'
+        role='tab'
+        aria-selected={props.filter === Filter.ALL}
+        onClick={() => props.onFilterChange(Filter.ALL)}
+      >
+        All
+      </button>
+      <button
+        className='btn-filter'
+        role='tab'
+        aria-selected={props.filter === Filter.ACTIVE}
+        onClick={() => props.onFilterChange(Filter.ACTIVE)}
+      >
+        Active
+      </button>
+      <button
+        className='btn-filter'
+        role='tab'
+        aria-selected={props.filter === Filter.COMPLETED}
+        onClick={() => props.onFilterChange(Filter.COMPLETED)}
+      >
+        Completed
+      </button>
+    </div>
+  )
 }

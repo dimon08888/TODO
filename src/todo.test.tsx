@@ -51,8 +51,64 @@ test('removes a todo when clicked on delete todo button', () => {
   expect(itemsLeftText).toBeVisible()
 })
 
-test.todo("click on todo - toggles it's completed status")
+test("click on todo - toggles it's completed status", () => {
+  render(<TodoApp />)
+  const newTodoButton = addTodo('New Todo')
+  const buttonClearCompleted = screen.getByRole('button', { name: /clear completed/i })
 
-test.todo('click on clear completed removes all completed todos')
+  userEvent.click(newTodoButton)
 
-test.todo('test filters')
+  expect(newTodoButton).toHaveStyle({ textDecoration: 'line-through' })
+  expect(screen.getByText(/0 items left/i)).toBeVisible()
+  expect(buttonClearCompleted).not.toBeDisabled()
+
+  userEvent.click(newTodoButton)
+
+  expect(newTodoButton).not.toHaveStyle({ textDecoration: 'line-through' })
+  expect(buttonClearCompleted).toBeDisabled()
+  expect(screen.getByText(/1 item left/i)).toBeVisible()
+})
+
+test('click on clear completed removes all completed todos', () => {
+  render(<TodoApp />)
+  const newTodoButton = addTodo('New Todo')
+  const buttonClearCompleted = screen.getByRole('button', { name: /clear completed/i })
+
+  userEvent.click(newTodoButton)
+
+  expect(buttonClearCompleted).not.toBeDisabled()
+
+  userEvent.click(buttonClearCompleted)
+
+  expect(newTodoButton).not.toBeInTheDocument()
+  expect(buttonClearCompleted).toBeDisabled()
+})
+
+test('filters', () => {
+  render(<TodoApp />)
+  const newTodoButton = addTodo('New Todo')
+  const allFilterButton = screen.getByRole('tab', { name: /all/i })
+  const activeFilterButton = screen.getByRole('tab', { name: /active/i })
+  const completedFilterButton = screen.getByRole('tab', { name: /completed/i })
+
+  userEvent.click(allFilterButton)
+  expect(newTodoButton).toBeVisible()
+
+  userEvent.click(activeFilterButton)
+  expect(newTodoButton).toBeVisible()
+
+  userEvent.click(completedFilterButton)
+  expect(newTodoButton).not.toBeInTheDocument()
+
+  userEvent.click(allFilterButton)
+  userEvent.click(newTodoButton)
+
+  // userEvent.click(allFilterButton)
+  // expect(newTodoButton).toBeVisible()
+
+  // userEvent.click(activeFilterButton)
+  // expect(newTodoButton).not.toBeInTheDocument()
+
+  // userEvent.click(completedFilterButton)
+  // expect(newTodoButton).toBeVisible()
+})
